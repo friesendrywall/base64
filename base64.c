@@ -19,7 +19,7 @@ static const char base64en[] = {
 };
 
 /* ASCII order for BASE 64 decode, 255 in unused character */
-static const unsigned char base64de[] = {
+static const uint8_t base64de[] = {
 	/* nul, soh, stx, etx, eot, enq, ack, bel, */
 	   255, 255, 255, 255, 255, 255, 255, 255,
 
@@ -69,14 +69,14 @@ static const unsigned char base64de[] = {
 	    49,  50,  51, 255, 255, 255, 255, 255
 };
 
-unsigned int
-base64_encode(const unsigned char *in, unsigned int inlen, char *out)
+uint32_t
+base64_encode(const uint8_t *in, uint32_t inlen, char *out)
 {
 	int s;
-	unsigned int i;
-	unsigned int j;
-	unsigned char c;
-	unsigned char l;
+	uint32_t i;
+	uint32_t j;
+	uint8_t c;
+	uint8_t l;
 
 	s = 0;
 	l = 0;
@@ -118,12 +118,12 @@ base64_encode(const unsigned char *in, unsigned int inlen, char *out)
 	return j;
 }
 
-unsigned int
-base64_decode(const char *in, unsigned int inlen, unsigned char *out)
+uint32_t
+base64_decode(const char *in, uint32_t inlen, uint8_t *out)
 {
-	unsigned int i;
-	unsigned int j;
-	unsigned char c;
+	uint32_t i;
+	uint32_t j;
+	uint8_t c;
 
 	if (inlen & 0x3) {
 		return 0;
@@ -137,7 +137,7 @@ base64_decode(const char *in, unsigned int inlen, unsigned char *out)
 			return 0;
 		}
 
-		c = base64de[(unsigned char)in[i]];
+		c = base64de[(uint8_t)in[i]];
 		if (c == 255) {
 			return 0;
 		}
