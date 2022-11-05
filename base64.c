@@ -70,95 +70,99 @@ static const uint8_t base64de[] = {
 };
 
 uint32_t
-base64_encode(const uint8_t *in, uint32_t inlen, char *out)
-{
-	int s;
-	uint32_t i;
-	uint32_t j;
-	uint8_t c;
-	uint8_t l;
+base64_encode(const uint8_t *in, uint32_t inlen, char *out) {
+  int s;
+  uint32_t i;
+  uint32_t j;
+  uint8_t c;
+  uint8_t l;
 
-	s = 0;
-	l = 0;
-	for (i = j = 0; i < inlen; i++) {
-		c = in[i];
+  s = 0;
+  l = 0;
+  for (i = j = 0; i < inlen; i++) {
+    c = in[i];
 
-		switch (s) {
-		case 0:
-			s = 1;
-			out[j++] = base64en[(c >> 2) & 0x3F];
-			break;
-		case 1:
-			s = 2;
-			out[j++] = base64en[((l & 0x3) << 4) | ((c >> 4) & 0xF)];
-			break;
-		case 2:
-			s = 0;
-			out[j++] = base64en[((l & 0xF) << 2) | ((c >> 6) & 0x3)];
-			out[j++] = base64en[c & 0x3F];
-			break;
-		}
-		l = c;
-	}
+    switch (s) {
+    case 0:
+      s = 1;
+      out[j++] = base64en[(c >> 2) & 0x3F];
+      break;
+    case 1:
+      s = 2;
+      out[j++] = base64en[((l & 0x3) << 4) | ((c >> 4) & 0xF)];
+      break;
+    case 2:
+      s = 0;
+      out[j++] = base64en[((l & 0xF) << 2) | ((c >> 6) & 0x3)];
+      out[j++] = base64en[c & 0x3F];
+      break;
+    default:
+      break;
+    }
+    l = c;
+  }
 
-	switch (s) {
-	case 1:
-		out[j++] = base64en[(l & 0x3) << 4];
-		out[j++] = BASE64_PAD;
-		out[j++] = BASE64_PAD;
-		break;
-	case 2:
-		out[j++] = base64en[(l & 0xF) << 2];
-		out[j++] = BASE64_PAD;
-		break;
-	}
+  switch (s) {
+  case 1:
+    out[j++] = base64en[(l & 0x3) << 4];
+    out[j++] = BASE64_PAD;
+    out[j++] = BASE64_PAD;
+    break;
+  case 2:
+    out[j++] = base64en[(l & 0xF) << 2];
+    out[j++] = BASE64_PAD;
+    break;
+  default:
+    break;
+  }
 
-	out[j] = 0;
+  out[j] = 0;
 
-	return j;
+  return j;
 }
 
 uint32_t
-base64_decode(const char *in, uint32_t inlen, uint8_t *out)
-{
-	uint32_t i;
-	uint32_t j;
-	uint8_t c;
+base64_decode(const char *in, uint32_t inlen, uint8_t *out) {
+  uint32_t i;
+  uint32_t j;
+  uint8_t c;
 
-	if (inlen & 0x3) {
-		return 0;
-	}
+  if (inlen & 0x3) {
+    return 0;
+  }
 
-	for (i = j = 0; i < inlen; i++) {
-		if (in[i] == BASE64_PAD) {
-			break;
-		}
-		if (in[i] < BASE64DE_FIRST || in[i] > BASE64DE_LAST) {
-			return 0;
-		}
+  for (i = j = 0; i < inlen; i++) {
+    if (in[i] == BASE64_PAD) {
+      break;
+    }
+    if (in[i] < BASE64DE_FIRST || in[i] > BASE64DE_LAST) {
+      return 0;
+    }
 
-		c = base64de[(uint8_t)in[i]];
-		if (c == 255) {
-			return 0;
-		}
+    c = base64de[(uint8_t)in[i]];
+    if (c == 255) {
+      return 0;
+    }
 
-		switch (i & 0x3) {
-		case 0:
-			out[j] = (c << 2) & 0xFF;
-			break;
-		case 1:
-			out[j++] |= (c >> 4) & 0x3;
-			out[j] = (c & 0xF) << 4; 
-			break;
-		case 2:
-			out[j++] |= (c >> 2) & 0xF;
-			out[j] = (c & 0x3) << 6;
-			break;
-		case 3:
-			out[j++] |= c;
-			break;
-		}
-	}
+    switch (i & 0x3) {
+    case 0:
+      out[j] = (c << 2) & 0xFF;
+      break;
+    case 1:
+      out[j++] |= (c >> 4) & 0x3;
+      out[j] = (c & 0xF) << 4;
+      break;
+    case 2:
+      out[j++] |= (c >> 2) & 0xF;
+      out[j] = (c & 0x3) << 6;
+      break;
+    case 3:
+      out[j++] |= c;
+      break;
+    default:
+      break;
+    }
+  }
 
-	return j;
+  return j;
 }
