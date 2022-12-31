@@ -17,6 +17,6 @@ base64_encode(const uint8_t *in, uint32_t inlen, char *out);
  * return values is out length
  */
 uint32_t
-base64_decode(const char *in, uint32_t inlen, uint8_t *out);
+base64_decode(const char *in, uint32_t inlen, uint8_t *out, uint32_t outlen);
 
 #endif /* BASE64_H */

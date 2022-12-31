@@ -122,7 +122,7 @@ base64_encode(const uint8_t *in, uint32_t inlen, char *out) {
 }
 
 uint32_t
-base64_decode(const char *in, uint32_t inlen, uint8_t *out) {
+base64_decode(const char *in, uint32_t inlen, uint8_t *out, uint32_t outlen) {
   uint32_t i;
   uint32_t j;
   uint8_t c;
@@ -143,17 +143,25 @@ base64_decode(const char *in, uint32_t inlen, uint8_t *out) {
     if (c == 255) {
       return 0;
     }
-
+    if (j >= outlen) {
+      return j;
+    }
     switch (i & 0x3) {
     case 0:
       out[j] = (c << 2) & 0xFF;
       break;
     case 1:
       out[j++] |= (c >> 4) & 0x3;
+      if (j == outlen) {
+        return j;
+      }
       out[j] = (c & 0xF) << 4;
       break;
     case 2:
       out[j++] |= (c >> 2) & 0xF;
+      if (j == outlen) {
+        return j;
+      }
       out[j] = (c & 0x3) << 6;
       break;
     case 3:
